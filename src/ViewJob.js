@@ -16,12 +16,17 @@ function useJob(id) {
         setJob(null);
       }
     }
+    let interval;
     if (id) {
+      interval = setInterval(() => loadJob(), 30000);
       loadJob();
     }
     return () => {
       stale = true;
       setJob(null);
+      if (interval) {
+        clearInterval(interval);
+      }
     };
   }, [id]);
   return job;
@@ -33,11 +38,17 @@ export default function ViewJob() {
 
   return (
     <div>
-      <img
-        src={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png`}
-        alt="Not available yet"
-        width="500"
-      />
+      <a
+        href={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <img
+          src={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png`}
+          alt="Not available yet"
+          width="500"
+        />
+      </a>
       {job && (
         <table>
           <tbody>
