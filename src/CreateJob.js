@@ -102,7 +102,7 @@ export default function CreateJob() {
               type="file"
               id="sceneDescription"
               accept=".emittergrid"
-              onChange={(e) => setEmitterGrid(e.target.value)}
+              onChange={(e) => setEmitterGrid(e.target.files[0])}
             />
             <br />
           </>
