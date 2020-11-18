@@ -95,24 +95,22 @@ export default function ViewJob() {
                     <Duration start={job.created} end={job.finishedAt} />
                   </td>
                 </tr>
-                {job.finishedAt && (
-                  <tr>
-                    <th>
-                      Effective <abbr title="Samples per second">SPS</abbr>
-                      <sup>(2)</sup>
-                    </th>
-                    <td>
-                      {(
-                        (job.targetSpp *
-                          job.sceneDescription?.width *
-                          job.sceneDescription?.height) /
-                        ((Date.parse(job.finishedAt) -
-                          Date.parse(job.created)) /
-                          1000)
-                      ).toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                    </td>
-                  </tr>
-                )}
+                <tr>
+                  <th>
+                    Effective <abbr title="Samples per second">SPS</abbr>
+                    <sup>(2)</sup>
+                  </th>
+                  <td>
+                    {(
+                      (job.targetSpp *
+                        job.sceneDescription?.width *
+                        job.sceneDescription?.height) /
+                      ((Date.parse(job.finishedAt || new Date().toISOString()) -
+                        Date.parse(job.created)) /
+                        1000)
+                    ).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                  </td>
+                </tr>
               </>
             )}
           </tbody>
