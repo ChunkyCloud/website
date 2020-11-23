@@ -61,6 +61,23 @@ export default function Stats() {
               </tr>
             </tbody>
           </table>
+          <h2>Today</h2>
+          <table>
+            <tbody>
+              <tr>
+                <th>Jobs created</th>
+                <td>{stats.today.jobsCreated.toLocaleString()}</td>
+              </tr>
+              <tr>
+                <th>Jobs finished</th>
+                <td>{stats.today.jobsFinished.toLocaleString()}</td>
+              </tr>
+              <tr>
+                <th>Dumps merged</th>
+                <td>{stats.today.dumpsMerged.toLocaleString()}</td>
+              </tr>
+            </tbody>
+          </table>
           <h2>Render nodes ({stats.renderNodes.length.toLocaleString()})</h2>
           <table>
             <thead>
@@ -96,7 +113,10 @@ export default function Stats() {
               </tr>
             </tfoot>
           </table>
-          <h2>Region processing nodes ({stats.prepareNodes.length.toLocaleString()})</h2>
+          <h2>
+            Region processing nodes (
+            {stats.prepareNodes.length.toLocaleString()})
+          </h2>
           <table>
             <thead>
               <th>Name</th>
@@ -126,8 +146,8 @@ export default function Stats() {
         be created from region files. ChunkyMap can use this so it doesn't need
         to construct the octree on a Minecraft server. New jobs that are created
         from region files are put in the <em>region processing queue</em> first
-        and added to the <em>render queue</em> after a <em>region processing node</em> has
-        created the scene files.
+        and added to the <em>render queue</em> after a{" "}
+        <em>region processing node</em> has created the scene files.
       </p>
       <p>
         When a <em>task</em> is done, it needs to be merged with the part of the
