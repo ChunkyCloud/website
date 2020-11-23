@@ -69,6 +69,19 @@ export default function ViewJob() {
               <td>
                 {job.spp.toLocaleString()}/{job.targetSpp.toLocaleString()} (
                 {Math.round((job.spp / job.targetSpp) * 100)}%)
+                {job.spp > 0 && (
+                  <>
+                    {" "}
+                    <a
+                      href={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.dump`}
+                      target="_blank"
+                      rel="noreferrer"
+                      download
+                    >
+                      Download dump
+                    </a>
+                  </>
+                )}
               </td>
             </tr>
             <tr>
