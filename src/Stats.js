@@ -150,8 +150,8 @@ export default function Stats() {
         <em>region processing node</em> has created the scene files.
       </p>
       <p>
-        When a <em>task</em> is done, it needs to be merged with the part of the
-        <em>job</em> that is already done. This is done by a single
+        When a <em>task</em> is done, it needs to be merged with the part of the{" "}
+        <em>job</em> that is already done. This is done by a single{" "}
         <em>dump processor</em> that also has a queue of dumps waiting to be
         merged.
       </p>
