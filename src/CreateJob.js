@@ -8,6 +8,7 @@ export default function CreateJob() {
   const [emitterGrid, setEmitterGrid] = useState();
   const [emitterGridRequired, setEmitterGridRequired] = useState(false);
   const [targetSpp, setTargetSpp] = useState(500);
+  const [texturepack, setTexturepack] = useState(null);
   const [apiKey, setApiKey] = useState("");
 
   const handleSceneDescriptionChange = useCallback(async (e) => {
@@ -35,6 +36,9 @@ export default function CreateJob() {
         body.append("emittergrid", emitterGrid);
       }
       body.append("targetSpp", parseInt(targetSpp, 10));
+      if (texturepack) {
+        body.append("texturepack", texturepack);
+      }
       const res = await fetch("https://api.chunkycloud.lemaik.de/jobs", {
         method: "POST",
         headers: {
@@ -60,6 +64,7 @@ export default function CreateJob() {
     octree,
     sceneDescription,
     targetSpp,
+    texturepack,
     push,
   ]);
 
@@ -118,8 +123,12 @@ export default function CreateJob() {
         />
         <br />
         <label htmlFor="texturepack">Resourcepack: </label>
-        <select id="texturepack">
-          <option value={null}>Vanilla (1.16.4)</option>
+        <select
+          id="texturepack"
+          value={texturepack}
+          onChange={(e) => setTexturepack(e.target.value || null)}
+        >
+          <option value="">Vanilla (1.16.4)</option>
           <option value="chromahills-1.16-v1.zip">Chromahills 1.16 v1</option>
           <option value="faithful-1.16.4">Faithful 1.16.4</option>
         </select>
