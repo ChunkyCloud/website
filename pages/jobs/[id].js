@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useRouter } from "next/router";
+import Head from "next/head";
 
-function useJob(id) {
-  const [job, setJob] = useState();
+function useJob(id, initialData) {
+  const [job, setJob] = useState(initialData);
   useEffect(() => {
     let stale = false;
     async function loadJob() {
@@ -19,7 +20,6 @@ function useJob(id) {
     let interval;
     if (id) {
       interval = setInterval(() => loadJob(), 30000);
-      loadJob();
     }
     return () => {
       stale = true;
@@ -32,12 +32,30 @@ function useJob(id) {
   return job;
 }
 
-export default function ViewJob() {
-  const { id } = useParams();
-  const job = useJob(id);
+export async function getServerSideProps(context) {
+  const res = await fetch(
+    `https://api.chunkycloud.lemaik.de/jobs/${context.params.id}`
+  );
+  const data = await res.json();
+
+  return {
+    props: {
+      initialData: data,
+    },
+  };
+}
+
+export default function JobDetails({ initialData }) {
+  const router = useRouter();
+  const { id } = router.query;
+
+  const job = useJob(id, initialData);
 
   return (
     <div>
+      <Head>
+        <title>Job {id} – ChunkyCloud</title>
+      </Head>
       <a
         href={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png`}
         target="_blank"

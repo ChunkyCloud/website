@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
-import { useHistory } from "react-router-dom";
+import { useRouter } from "next/router";
 
 export default function CreateJob() {
-  const { push } = useHistory();
+  const router = useRouter();
   const [sceneDescription, setSceneDescription] = useState();
   const [octree, setOctree] = useState();
   const [emitterGrid, setEmitterGrid] = useState();
@@ -47,7 +47,7 @@ export default function CreateJob() {
         body,
       });
       if (res.status === 201) {
-        push(`/jobs/${(await res.json())._id}`);
+        router.push(`/jobs/${(await res.json())._id}`);
       } else {
         throw new Error(await res.text());
       }
@@ -65,7 +65,7 @@ export default function CreateJob() {
     sceneDescription,
     targetSpp,
     texturepack,
-    push,
+    router,
   ]);
 
   return (

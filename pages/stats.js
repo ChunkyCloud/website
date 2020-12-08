@@ -1,7 +1,8 @@
+import Head from "next/head";
 import { useEffect, useState } from "react";
 
-function useStats() {
-  const [stats, setStats] = useState();
+function useStats(initialStats) {
+  const [stats, setStats] = useState(initialStats);
   useEffect(() => {
     let stale = false;
     async function loadStats() {
@@ -14,7 +15,6 @@ function useStats() {
       }
     }
     const interval = setInterval(() => loadStats(), 30000);
-    loadStats();
     return () => {
       stale = true;
       setStats(null);
@@ -26,11 +26,27 @@ function useStats() {
   return stats;
 }
 
-export default function Stats() {
-  const stats = useStats();
+export async function getStaticProps(context) {
+  const res = await fetch(`https://api.chunkycloud.lemaik.de/stats`);
+  const data = await res.json();
+
+  return {
+    props: {
+      initialStats: data,
+    },
+    revalidate: 1,
+  };
+}
+
+export default function Stats({ initialStats }) {
+  const stats = useStats(initialStats);
 
   return (
-    <>
+    <div>
+      <Head>
+        <title>Statistics – ChunkyCloud</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <h1>ChunkyCloud statistics</h1>
       {stats && (
         <>
@@ -159,6 +175,6 @@ export default function Stats() {
         If a job gets cancelled, it is not removed from the queues. The nodes
         will check if it is cancelled and just skip them in that case.
       </p>
-    </>
+    </div>
   );
 }
