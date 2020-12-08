@@ -24,7 +24,7 @@ export default function Home() {
 
           <a href="/stats" className={styles.card}>
             <h3>Statistics &rarr;</h3>
-            <p>See how ChunkyCloud is doing and some numbers</p>
+            <p>See how ChunkyCloud is doing and some numbers.</p>
           </a>
 
           <a
@@ -32,9 +32,9 @@ export default function Home() {
             className={styles.card}
             style={{ opacity: 0.5, pointerEvents: "none" }}
           >
-            <h3>Render with us &rarr;</h3>
+            <h3>Join the render farm &rarr;</h3>
             <p>
-              Get the render node software and add your PC to the server farm.
+              Get the render node software and add contribute computing power.
             </p>
           </a>
         </div>
