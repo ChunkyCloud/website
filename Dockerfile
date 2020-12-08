@@ -1,7 +1,7 @@
-FROM node:12 AS build-deps
+FROM node:12
 WORKDIR /usr/src/app
-COPY package.json yarn.lock ./
-RUN yarn --frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . ./
 RUN yarn build
 
