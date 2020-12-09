@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import Header from "../../components/Header";
 
 function useJob(id, initialData) {
   const [job, setJob] = useState(initialData);
@@ -56,6 +57,7 @@ export default function JobDetails({ initialData }) {
       <Head>
         <title>Job {id} – ChunkyCloud</title>
       </Head>
+      <Header title={id} breadcrumbs={[{ title: "Jobs" }]} />
       <a
         href={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png`}
         target="_blank"

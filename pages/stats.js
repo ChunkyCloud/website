@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
+import Header from "../components/Header";
 
 function useStats(initialStats) {
   const [stats, setStats] = useState(initialStats);
@@ -46,6 +47,7 @@ export default function Stats({ initialStats }) {
         <title>Statistics – ChunkyCloud</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Header title="Statistics" />
       <h1>ChunkyCloud statistics</h1>
       {stats && (
         <>

@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/router";
+import Header from "../components/Header";
 
 export default function CreateJob() {
   const router = useRouter();
@@ -70,6 +71,7 @@ export default function CreateJob() {
 
   return (
     <>
+      <Header title="New render job" />
       <h1>Create new render job</h1>
       <p>
         To create a new render job, please select your scene files below and
