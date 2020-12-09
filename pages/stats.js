@@ -26,7 +26,7 @@ function useStats(initialStats) {
   return stats;
 }
 
-export async function getStaticProps(context) {
+export async function getServerSideProps(context) {
   const res = await fetch(`https://api.chunkycloud.lemaik.de/stats`);
   const data = await res.json();
 
@@ -34,7 +34,6 @@ export async function getStaticProps(context) {
     props: {
       initialStats: data,
     },
-    revalidate: 1,
   };
 }
 
