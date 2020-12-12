@@ -2,7 +2,18 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import Header from "../components/Header";
 
-export default function CreateJob() {
+export async function getServerSideProps(context) {
+  const res = await fetch(`https://api.chunkycloud.lemaik.de/resourcepacks`);
+  const data = await res.json();
+
+  return {
+    props: {
+      resourcePacks: data,
+    },
+  };
+}
+
+export default function CreateJob({ resourcePacks }) {
   const router = useRouter();
   const [sceneDescription, setSceneDescription] = useState();
   const [octree, setOctree] = useState();
@@ -131,8 +142,11 @@ export default function CreateJob() {
           onChange={(e) => setTexturepack(e.target.value || null)}
         >
           <option value="">Vanilla (1.16.4)</option>
-          <option value="chromahills-1.16-v1.zip">Chromahills 1.16 v1</option>
-          <option value="faithful-1.16.4">Faithful 1.16.4</option>
+          {resourcePacks.map(({ name, displayName }) => (
+            <option key={name} value={name}>
+              {displayName}
+            </option>
+          ))}
         </select>
         <br />
         <button onClick={handleSubmit} disabled={submitting}>
