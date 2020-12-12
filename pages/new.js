@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import Header from "../components/Header";
+import Head from "next/head";
 
 export async function getServerSideProps(context) {
   const res = await fetch(`https://api.chunkycloud.lemaik.de/resourcepacks`);
@@ -82,6 +83,10 @@ export default function CreateJob({ resourcePacks }) {
 
   return (
     <>
+      <Head>
+        <title>New render job – ChunkyCloud</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Header title="New render job" />
       <h1>Create new render job</h1>
       <p>
