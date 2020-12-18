@@ -27,11 +27,7 @@ export default function Home() {
             <p>See how ChunkyCloud is doing and some numbers.</p>
           </a>
 
-          <a
-            href="/stats"
-            className={styles.card}
-            style={{ opacity: 0.5, pointerEvents: "none" }}
-          >
+          <a href="/join" className={styles.card}>
             <h3>Join the render farm &rarr;</h3>
             <p>
               Get the render node software and add contribute computing power.
