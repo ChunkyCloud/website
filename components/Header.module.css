@@ -3,11 +3,14 @@
   height: 48px;
   line-height: 48px;
   color: #eaeaea;
+  background: #fff;
   padding: 0 8px;
   font-size: 16px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  position: sticky;
+  top: 0;
 }
 
 .header a,

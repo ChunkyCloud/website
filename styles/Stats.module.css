@@ -1,0 +1,46 @@
+.queue {
+  display: flex;
+  flex-direction: row;
+}
+
+.step {
+  position: relative;
+  width: 150px;
+  border: 1px solid #eaeaea;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.step:not(:last-child) {
+  border-right: 0;
+}
+
+.step:not(:last-child)::after {
+  position: absolute;
+  z-index: 2;
+  content: "";
+  top: 50%;
+  right: 0;
+  border: medium none;
+  background-color: #fff;
+  width: 1.14285714em;
+  height: 1.14285714em;
+  border-style: solid;
+  border-color: #eaeaea;
+  border-width: 0 1px 1px 0;
+  transform: translateY(-50%) translateX(50%) rotate(-45deg);
+}
+
+.step div:first-child {
+  font-size: 1.5rem;
+}
+
+.step div:last-child {
+  opacity: 0.5;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
