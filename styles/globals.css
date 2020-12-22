@@ -17,7 +17,7 @@ a {
 
 @media (max-width: 600px) {
   html {
-    font-size: 0.625rem;
+    font-size: max(0.625rem, 12px);
   }
 }
 
@@ -25,4 +25,22 @@ a {
   max-width: 720px;
   padding: 24px;
   margin: 0 auto;
+}
+
+h2 small {
+  font-weight: normal;
+  font-size: 0.8rem;
+  opacity: 0.54;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #eaeaea;
+}
+
+@media (max-width: 600px) {
+  h2 small {
+    display: block;
+    clear: both;
+  }
 }

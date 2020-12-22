@@ -1,9 +1,11 @@
 .queue {
   display: flex;
   flex-direction: row;
+  overflow-x: auto;
 }
 
-.step {
+.step,
+.number {
   position: relative;
   width: 150px;
   border: 1px solid #eaeaea;
@@ -13,7 +15,8 @@
   text-align: center;
 }
 
-.step:not(:last-child) {
+.step:not(:last-child),
+.number:not(:last-child) {
   border-right: 0;
 }
 
@@ -33,14 +36,71 @@
   transform: translateY(-50%) translateX(50%) rotate(-45deg);
 }
 
-.step div:first-child {
+.step div:first-child,
+.number div:first-child {
   font-size: 1.5rem;
 }
 
-.step div:last-child {
+.step div:last-child,
+.number div:last-child {
   opacity: 0.5;
   font-size: 0.8rem;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+.today {
+  margin-top: calc(1.5 * 0.83em);
+  display: flex;
+}
+
+.number {
+  width: calc(100% / 3);
+}
+
+.nodes {
+  display: grid;
+  grid-gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(120px, 10rem), 1fr));
+  margin-bottom: calc(1.5 * 0.83em);
+}
+
+.node {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.node div {
+  opacity: 0.3;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.node.active div {
+  opacity: 0.87;
+}
+
+.node .cog {
+  border-radius: 50%;
+  background-color: #fff;
+  position: absolute;
+  margin-left: 1.125rem;
+  margin-top: 1.2rem;
+}
+
+.node span {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.node span:nth-child(3) {
+  opacity: 0.54;
+  font-size: 0.725rem;
 }

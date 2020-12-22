@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import Icon from "@mdi/react";
-import { mdiDesktopTower } from "@mdi/js";
+import { mdiCog, mdiDesktopTower } from "@mdi/js";
 import Header from "../components/Header";
 import styles from "../styles/Stats.module.css";
 import contentStyles from "../styles/Content.module.css";
@@ -83,95 +83,91 @@ export default function Stats({ initialStats }) {
                 </div>
                 <div>Merging</div>
               </div>
-              <div className={styles.step}>
+            </div>
+            <div className={styles.today}>
+              <div className={styles.number}>
+                <div>{stats.today.jobsCreated.toLocaleString()}</div>
+                <div>Jobs created today</div>
+              </div>
+              <div className={styles.number}>
+                <div>{stats.today.jobsFinished.toLocaleString()}</div>
+                <div>Jobs finished today</div>
+              </div>
+              <div className={styles.number}>
                 <div>{stats.today.dumpsMerged.toLocaleString()}</div>
-                <div>Done (today)</div>
+                <div>Dumps merged today</div>
               </div>
             </div>
-            <h2>Today</h2>
-            <table>
-              <tbody>
-                <tr>
-                  <th>Jobs created</th>
-                  <td>{stats.today.jobsCreated.toLocaleString()}</td>
-                </tr>
-                <tr>
-                  <th>Jobs finished</th>
-                  <td>{stats.today.jobsFinished.toLocaleString()}</td>
-                </tr>
-                <tr>
-                  <th>Dumps merged</th>
-                  <td>{stats.today.dumpsMerged.toLocaleString()}</td>
-                </tr>
-              </tbody>
-            </table>
-            <h2>Render nodes ({stats.renderNodes.length.toLocaleString()})</h2>
+            <h2>
+              Render nodes{" "}
+              <small>
+                {stats.renderNodes.length.toLocaleString()} nodes,{" "}
+                {stats.renderNodes
+                  .filter((node) => node.status === "working")
+                  .length.toLocaleString()}{" "}
+                working
+              </small>
+            </h2>
             <div className={styles.nodes}>
               {stats.renderNodes.map((node, i) => (
-                <div key={i} className={styles.node}>
-                  <Icon
-                    path={mdiDesktopTower}
-                    title="User Profile"
-                    size={1}
-                    color={node.status === "working" ? "" : "rgba(0,0,0,0.3)"}
-                  />
+                <div
+                  key={i}
+                  className={`${styles.node} ${
+                    node.status === "working" ? styles.active : ""
+                  }`}
+                >
+                  <div>
+                    <Icon path={mdiDesktopTower} size={1.5} horizontal />
+                    {node.status === "working" && (
+                      <Icon
+                        path={mdiCog}
+                        size={0.75}
+                        spin={-5}
+                        className={styles.cog}
+                      />
+                    )}
+                  </div>
                   <span>{node.name}</span>
+                  <span>
+                    {node.threads} {node.threads > 1 ? "threads" : "thread"}
+                  </span>
                 </div>
               ))}
             </div>
 
-            <table>
-              <thead>
-                <th>Name</th>
-                <th>Render threads</th>
-                <th>Status</th>
-              </thead>
-              <tbody>
-                {stats.renderNodes.map((node, i) => (
-                  <tr key={i}>
-                    <td>{node.name}</td>
-                    <td>{node.threads}</td>
-                    <td>{node.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th>Total render threads</th>
-                  <td colSpan={2}>
-                    {stats.renderNodes.reduce(
-                      (sum, node) => sum + node.threads,
-                      0
-                    )}{" "}
-                    (
-                    {stats.renderNodes.reduce(
-                      (sum, node) =>
-                        node.status === "working" ? sum + node.threads : sum,
-                      0
-                    )}{" "}
-                    working)
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
             <h2>
-              Region processing nodes (
-              {stats.prepareNodes.length.toLocaleString()})
+              Region processing nodes{" "}
+              <small>
+                {stats.prepareNodes.length.toLocaleString()} nodes,{" "}
+                {stats.prepareNodes
+                  .filter((node) => node.status === "working")
+                  .length.toLocaleString()}{" "}
+                working
+              </small>
             </h2>
-            <table>
-              <thead>
-                <th>Name</th>
-                <th>Status</th>
-              </thead>
-              <tbody>
-                {stats.prepareNodes.map((node, i) => (
-                  <tr key={i}>
-                    <td>{node.name}</td>
-                    <td>{node.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className={styles.nodes}>
+              {stats.prepareNodes.map((node, i) => (
+                <div
+                  key={i}
+                  className={`${styles.node} ${
+                    node.status === "working" ? styles.active : ""
+                  }`}
+                >
+                  <div>
+                    <Icon path={mdiDesktopTower} size={1.5} horizontal />
+                    {node.status === "working" && (
+                      <Icon
+                        path={mdiCog}
+                        size={0.75}
+                        spin={-5}
+                        className={styles.cog}
+                      />
+                    )}
+                  </div>
+                  <span>{node.name}</span>
+                </div>
+              ))}
+            </div>
           </>
         )}
         <hr />
