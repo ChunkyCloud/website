@@ -101,11 +101,14 @@ export default function Stats({ initialStats }) {
             <h2>
               Render nodes{" "}
               <small>
-                {stats.renderNodes.length.toLocaleString()} nodes,{" "}
-                {stats.renderNodes
+                {`${stats.renderNodes
                   .filter((node) => node.status === "working")
-                  .length.toLocaleString()}{" "}
-                working
+                  .length.toLocaleString()} of ${stats.renderNodes.length.toLocaleString()} nodes working (${stats.renderNodes
+                  .filter((node) => node.status === "working")
+                  .reduce((sum, node) => sum + node.threads, 0)
+                  .toLocaleString()} of ${stats.renderNodes
+                  .reduce((sum, node) => sum + node.threads, 0)
+                  .toLocaleString()} threads)`}
               </small>
             </h2>
             <div className={styles.nodes}>
@@ -138,11 +141,9 @@ export default function Stats({ initialStats }) {
             <h2>
               Region processing nodes{" "}
               <small>
-                {stats.prepareNodes.length.toLocaleString()} nodes,{" "}
-                {stats.prepareNodes
+                {`${stats.prepareNodes
                   .filter((node) => node.status === "working")
-                  .length.toLocaleString()}{" "}
-                working
+                  .length.toLocaleString()} of ${stats.prepareNodes.length.toLocaleString()} nodes working`}
               </small>
             </h2>
             <div className={styles.nodes}>
