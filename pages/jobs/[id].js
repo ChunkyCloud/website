@@ -58,17 +58,19 @@ export default function JobDetails({ initialData }) {
         <title>Job {id} – ChunkyCloud</title>
       </Head>
       <Header title={id} breadcrumbs={[{ title: "Jobs" }]} />
-      <a
-        href={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        <img
-          src={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png`}
-          alt="Not available yet"
-          width="500"
-        />
-      </a>
+      {job.spp > 0 && (
+        <a
+          href={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <img
+            src={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png`}
+            alt="Not available yet"
+            width="500"
+          />
+        </a>
+      )}
       {job && (
         <table>
           <tbody>
@@ -89,7 +91,7 @@ export default function JobDetails({ initialData }) {
               <td>
                 {job.spp.toLocaleString()}/{job.targetSpp.toLocaleString()} (
                 {Math.round((job.spp / job.targetSpp) * 100)}%)
-                {job.spp > 0 && (
+                {job.spp > 0 && !job.pictureOnly && (
                   <>
                     {" "}
                     <a
@@ -134,14 +136,20 @@ export default function JobDetails({ initialData }) {
                     <sup>(2)</sup>
                   </th>
                   <td>
-                    {(
-                      (job.targetSpp *
-                        job.sceneDescription?.width *
-                        job.sceneDescription?.height) /
-                      ((Date.parse(job.finishedAt || new Date().toISOString()) -
-                        Date.parse(job.created)) /
-                        1000)
-                    ).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                    {job.spp > 0
+                      ? (
+                          (job.spp *
+                            job.sceneDescription?.width *
+                            job.sceneDescription?.height) /
+                          ((Date.parse(
+                            job.finishedAt || new Date().toISOString()
+                          ) -
+                            Date.parse(job.created)) /
+                            1000)
+                        ).toLocaleString(undefined, {
+                          maximumFractionDigits: 2,
+                        })
+                      : "n/a"}
                   </td>
                 </tr>
               </>
