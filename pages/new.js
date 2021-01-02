@@ -22,6 +22,8 @@ export default function CreateJob({ resourcePacks }) {
   const [emitterGridRequired, setEmitterGridRequired] = useState(false);
   const [targetSpp, setTargetSpp] = useState(500);
   const [texturepack, setTexturepack] = useState(null);
+  const [skymap, setSkymap] = useState();
+  const [skymapRequired, setSkymapRequired] = useState(false);
   const [apiKey, setApiKey] = useState("");
 
   const handleSceneDescriptionChange = useCallback(async (e) => {
@@ -33,8 +35,14 @@ export default function CreateJob({ resourcePacks }) {
         json.emitterSamplingStrategy != null &&
           json.emitterSamplingStrategy !== "NONE"
       );
+      setSkymapRequired(
+        json.sky.mode === "SKYMAP_PANORAMIC" ||
+          json.sky.mode === "SKYMAP_PANORAMIC"
+      );
+      // Skybox (six textures) is not supported by ChunkyCloud
     } else {
       setEmitterGridRequired(false);
+      setSkymapRequired(false);
     }
   }, []);
 
@@ -51,6 +59,9 @@ export default function CreateJob({ resourcePacks }) {
       body.append("targetSpp", parseInt(targetSpp, 10));
       if (texturepack) {
         body.append("texturepack", texturepack);
+      }
+      if (skymapRequired && skymap) {
+        body.append("skymap", skymap);
       }
       const res = await fetch("https://api.chunkycloud.lemaik.de/jobs", {
         method: "POST",
@@ -78,6 +89,8 @@ export default function CreateJob({ resourcePacks }) {
     sceneDescription,
     targetSpp,
     texturepack,
+    skymap,
+    skymapRequired,
     router,
   ]);
 
@@ -118,18 +131,26 @@ export default function CreateJob({ resourcePacks }) {
           onChange={(e) => setOctree(e.target.files[0])}
         />
         <br />
-        {emitterGridRequired && (
-          <>
-            <label htmlFor="sceneDescription">Emitter grid*: </label>
-            <input
-              type="file"
-              id="sceneDescription"
-              accept=".emittergrid"
-              onChange={(e) => setEmitterGrid(e.target.files[0])}
-            />
-            <br />
-          </>
-        )}
+        <label htmlFor="sceneDescription">
+          Emitter grid{emitterGridRequired ? "*" : ""}:{" "}
+        </label>
+        <input
+          type="file"
+          id="sceneDescription"
+          accept=".emittergrid"
+          onChange={(e) => setEmitterGrid(e.target.files[0])}
+          disabled={!emitterGridRequired}
+        />
+        <br />
+        <label htmlFor="octree">Skymap{skymapRequired ? "*" : ""}: </label>
+        <input
+          type="file"
+          id="octree"
+          accept=".png,.jpg,.hdr,.pfm"
+          onChange={(e) => setSkymap(e.target.files[0])}
+          disabled={!skymapRequired}
+        />
+        <br />
         <label htmlFor="targetSpp">Samples per pixel*: </label>
         <input
           type="number"
