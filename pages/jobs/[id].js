@@ -60,12 +60,12 @@ export default function JobDetails({ initialData }) {
       <Header title={id} breadcrumbs={[{ title: "Jobs" }]} />
       {job.spp > 0 && (
         <a
-          href={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png`}
+          href={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png?${job.spp}`}
           target="_blank"
           rel="noreferrer"
         >
           <img
-            src={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png`}
+            src={`https://api.chunkycloud.lemaik.de/jobs/${id}/latest.png?${job.spp}`}
             alt="Not available yet"
             width="500"
           />
