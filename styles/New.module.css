@@ -1,0 +1,22 @@
+.root {
+  height: calc(100vh - 48px);
+  padding: 24px;
+}
+
+.root h1:first-child {
+  margin-top: 0;
+}
+
+.dragging::before {
+  content: "Drop the file(s) anywhere on this page";
+  position: fixed;
+  left: 0;
+  width: 100%;
+  top: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
