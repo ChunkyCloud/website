@@ -154,7 +154,7 @@ export default function JobDetails({ initialData }) {
                 </tr>
               </>
             )}
-            {job.renderTime && (
+            {job.renderTime > 0 && (
               <>
                 <tr>
                   <th>

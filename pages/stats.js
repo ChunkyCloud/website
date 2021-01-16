@@ -130,7 +130,7 @@ export default function Stats({ initialStats }) {
                       />
                     )}
                   </div>
-                  <span>{node.name}</span>
+                  <span title={node.name}>{node.name}</span>
                   <span>
                     {node.threads} {node.threads > 1 ? "threads" : "thread"}
                   </span>
@@ -165,7 +165,7 @@ export default function Stats({ initialStats }) {
                       />
                     )}
                   </div>
-                  <span>{node.name}</span>
+                  <span title={node.name}>{node.name}</span>
                 </div>
               ))}
             </div>
