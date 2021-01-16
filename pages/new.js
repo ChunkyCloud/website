@@ -140,21 +140,25 @@ export default function CreateJob({ resourcePacks }) {
         const octree = files.find((f) => f.name === `${sceneName}.octree2`);
         if (octree) {
           octreeRef.current.files = createFileList(octree);
+          setOctree(octree);
         }
         const emitterGrid = files.find(
           (f) => f.name === `${sceneName}.emittergrid`
         );
         if (emitterGrid) {
           emitterGridRef.current.files = createFileList(emitterGrid);
+          setEmitterGrid(emitterGrid);
         }
       } else {
         const octree = files.find((f) => f.name.endsWith(".octree2"));
         if (octree) {
           octreeRef.current.files = createFileList(octree);
+          setOctree(octree);
         }
         const emitterGrid = files.find((f) => f.name.endsWith(".emittergrid"));
         if (emitterGrid) {
           emitterGridRef.current.files = createFileList(emitterGrid);
+          setEmitterGrid(emitterGrid);
         }
       }
     },
