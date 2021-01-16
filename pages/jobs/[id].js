@@ -124,7 +124,7 @@ export default function JobDetails({ initialData }) {
               <>
                 <tr>
                   <th>
-                    Render time<sup>(1)</sup>
+                    Total time<sup>(1)</sup>
                   </th>
                   <td>
                     <Duration start={job.created} end={job.finishedAt} />
@@ -154,14 +154,52 @@ export default function JobDetails({ initialData }) {
                 </tr>
               </>
             )}
+            {job.renderTime && (
+              <>
+                <tr>
+                  <th>
+                    Render time<sup>(3)</sup>
+                  </th>
+                  <td>
+                    <Duration
+                      start={new Date(0)}
+                      end={new Date(job.renderTime * 1000)}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <th>
+                    Average <abbr title="Samples per second">SPS</abbr>
+                    <sup>(4)</sup>
+                  </th>
+                  <td>
+                    {(
+                      (job.spp *
+                        job.sceneDescription?.width *
+                        job.sceneDescription?.height) /
+                      job.renderTime
+                    ).toLocaleString(undefined, {
+                      maximumFractionDigits: 2,
+                    })}
+                  </td>
+                </tr>
+              </>
+            )}
           </tbody>
         </table>
       )}
-      <p>
-        <sup>1</sup>Includes time spent waiting for workers and transmitting
-        files
+      <p style={{ fontSize: "0.8rem" }}>
+        <sup>1</sup>Actual time between the job being created and finished.
+        Includes time spent waiting for workers and transmitting files.
         <br />
-        <sup>2</sup>Total samples divided by the render time
+        <sup>2</sup>Total samples divided by the total time
+        <br />
+        <sup>3</sup>Sum of the render times of all merged dumps of this job.
+        Does not include time spent downloading, loading, saving or uploading
+        the scene files.
+        <br />
+        <sup>4</sup>Total samples divided by the render time, resulting in the
+        average SPS of the involved render nodes
       </p>
     </div>
   );
