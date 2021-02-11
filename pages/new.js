@@ -64,7 +64,7 @@ export default function CreateJob({ resourcePacks }) {
       }
       const newSkymapRequired =
         json.sky.mode === "SKYMAP_PANORAMIC" ||
-        json.sky.mode === "SKYMAP_PANORAMIC";
+        json.sky.mode === "SKYMAP_SPHERICAL";
       setSkymapRequired(newSkymapRequired);
       if (!newSkymapRequired) {
         skymapRef.current.value = "";
