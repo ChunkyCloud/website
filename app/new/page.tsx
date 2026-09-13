@@ -62,7 +62,6 @@ export default function CreateJob() {
   const [customWidth, setCustomWidth] = useState(1920);
   const [customHeight, setCustomHeight] = useState(1080);
 
-  const [renderName, setRenderName] = useState<string>("");
   const [targetSpp, setTargetSpp] = useState(500);
   const [renderDump, setRenderDump] = useState(false);
   const [texturepack, setTexturepack] = useState<ResourcePackResponse[]>([]);
@@ -184,8 +183,6 @@ export default function CreateJob() {
 
         const sceneName = json.name.replace(/\.json$/, "");
 
-        setRenderName(sceneName);
-
         const octreeFile = files.find((f) => f.name === `${sceneName}.octree2`);
         if (octreeFile && octreeRef.current) {
           octreeRef.current.files = createFileList(octreeFile);
@@ -261,12 +258,11 @@ export default function CreateJob() {
     {
       /* Validate if required Inputs are filled out */
     }
-    if (!sceneDescription || !octreeDescription || !renderName) {
+    if (!sceneDescription || !octreeDescription) {
       setShowValidation(true);
       console.log("Job Validation failed Case: Missing required field:", {
         sceneDescription: sceneDescription,
         octreeDescription: octreeDescription,
-        renderName: renderName,
       });
       return;
     }
@@ -546,20 +542,6 @@ export default function CreateJob() {
                   accept=".hdr, .exr"
                   onChange={(e) => setSkymap(e.target.files?.[0])}
                   ref={skymapRef}
-                />
-              </div>
-              <div className="form-control w-full mb-6 menu-vertical">
-                <label className="label" htmlFor="renderName">
-                  <span className="block mb-2 label-text text-base font-bold">
-                    Scene Name
-                  </span>
-                </label>
-                <input
-                  type="string"
-                  placeholder="Scene Name"
-                  className="input input-bordered input-md w-1/2 mb-3"
-                  value={renderName}
-                  onChange={(e) => setRenderName(String(e.target.value))}
                 />
               </div>
               <div className="form-control w-full mb-4 menu-vertical">
