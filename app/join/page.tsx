@@ -1,15 +1,12 @@
 import React from "react";
 import AccordionSection from "../../components/Join/AccordionSection";
 import Link from "next/link";
-//import { toFormData } from "axios";
+
+const renderNodeReadme = "https://github.com/ChunkyCloud/render-node#readme";
+const serverReadme = "https://github.com/ChunkyCloud/server#readme";
 
 const DocsPage = () => {
   return (
-    /*
-     * RODO: add  Version Tag for latest git release of rendernode and change 3. Accordingly (e.g. filename in Launch Node)
-     * TODO: Add Images or animations for explaination
-     * TODO Make each text segment a seperated section
-     */
     <div
       className="hero min-h-screen relative"
       style={{
@@ -18,212 +15,156 @@ const DocsPage = () => {
     >
       <fieldset className="fieldset bg-base-200/95 border-base-300 rounded-box border p-8 shadow mb-8">
         <legend className="fieldset-legend text-3xl font-bold">
-          How to start Rendering
+          Start rendering with ChunkyCloud
         </legend>
-        <div className={`mt-4 p-4 rounded-lg border-2`}>
+        <div className="mt-4 p-4 rounded-lg border-2">
           <div className="max-w-3xl mb-8 mx-auto px-4 py-10 prose prose-neutral dark:prose-invert">
             <h2>Join the render farm</h2>
             <p>
-              ChunkyCloud is made possible by all the people that contribute
-              their computing power for others to render their scenes on.
+              Contribute computing power from your PC or server to help others
+              render their scenes. Your machine becomes a <em>render node</em>,
+              rendering tasks with Chunky as part of the farm.
             </p>
             <p>
-              Under the hood, scenes get split up and rendered on multiple nodes
-              in parallel and the resulting images are merged back together.
-            </p>
-            <p>
-              This guide explains how to add a PC or server (called a{" "}
-              <em>render node</em>) to ChunkyCloud.
-            </p>
-
-            <h3>1. Get an Node Token</h3>
-            <p>
-              In order to add your node, you need an <em>Node Token</em>. You
-              can create a Node Token in your{" "}
-              <Link href="/account">Account</Link>.
-            </p>
-            <p>
-              The Node Token is used to identify nodes and give us a way to
-              identify and exclude malicious nodes. In the future, it will also
-              be used to give you credits for rendering that you can then use to
-              create render jobs.
-            </p>
-            <p>
-              Until this is ready, you can render as much as you want (but
-              please keep it fair).
-            </p>
-
-            <h3>2. Download the render node software</h3>
-            <p>
-              Once you have a Node Token, download the latest version from the{" "}
+              This guide covers the basics. For the latest requirements,
+              commands, and configuration options, check the{" "}
               <a
-                className="link link-primary"
+                href={renderNodeReadme}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                render node README
+              </a>
+              . If anything differs, follow the README.
+            </p>
+
+            <h3>1. Create a node token</h3>
+            <p>
+              Sign in and create a render node token in your{" "}
+              <Link href="/account">account</Link>. This token is the API key
+              your node uses to connect to ChunkyCloud.
+            </p>
+            <p>
+              <strong>
+                Use a separate token for each render node process.
+              </strong>{" "}
+              Only one process may run per API key. Create another token if you
+              want to run an additional node.
+            </p>
+
+            <h3>2. Download the render node</h3>
+            <p>
+              Install <strong>Java 17 or newer</strong>, then download the JAR
+              file from the{" "}
+              <a
                 href="https://github.com/ChunkyCloud/render-node/releases/latest"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                releases page
+                latest release
+              </a>
+              . Keep your node up to date to stay compatible with the server. If
+              you prefer Docker, see the command below.
+            </p>
+
+            <h3>3. Start the node</h3>
+            <p>
+              Open a terminal in the folder containing the downloaded JAR.
+              Replace <code>DOWNLOADED_FILE.jar</code> with its filename and{" "}
+              <code>YOUR_NODE_TOKEN</code> with your token:
+            </p>
+            <pre className="bg-base-200 p-4 rounded-md overflow-x-auto text-sm">
+              <code>
+                {"java -jar DOWNLOADED_FILE.jar --api-key YOUR_NODE_TOKEN"}
+              </code>
+            </pre>
+            <p>
+              The node connects to <code>https://api.chunkycloud.net</code> by
+              default. It polls for tasks, downloads the required scene data and
+              resource packs, renders with Chunky, and uploads the results.
+            </p>
+            <p>
+              To adjust resource usage, add <code>--thread-count 4</code> to use
+              four render threads or <code>--cpu-load 50</code> to set the
+              maximum Chunky CPU load to 50%. The defaults are two threads and
+              100% CPU load. Use <code>--api URL</code> to connect to another
+              ChunkyCloud server with a token issued by that server.
+            </p>
+            <p>
+              You can also supply the token through the <code>API_KEY</code>{" "}
+              environment variable or <code>--api-key-file</code>. For the full
+              option list and cache settings, see the{" "}
+              <a
+                href={`${renderNodeReadme.replace("#readme", "")}#configuration`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                configuration reference
               </a>
               .
             </p>
-            <p>
-              Make sure that you <strong>always use the latest version</strong>.
-              If there are breaking changes, your node may not be able to
-              connect anymore without being updated.
-            </p>
 
-            <h3>3. Launch the node</h3>
-            <p>
-              Open a command prompt in the directory that contains the{" "}
-              <code>.jar</code> file and run the following command to start the
-              node (change the filename accordingly):
-            </p>
-            <pre className="bg-base-200 p-4 rounded-md overflow-x-auto text-sm">
-              <code>java -jar cc-rendernode-1.0.0.jar --api-key</code>
-            </pre>
-            <h4>Available parameters</h4>
-            <p>
-              Use these flags to customize how your render node connects and
-              stores temporary data.
-            </p>
-            <div className="not-prose overflow-x-auto rounded-lg border border-base-300 bg-base-100">
-              <table className="table table-zebra w-full text-sm">
-                <thead>
-                  <tr>
-                    <th>Option</th>
-                    <th>Default</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <code>--api</code>
-                    </td>
-                    <td>
-                      <code>https://api.chunkycloud.lemaik.de</code>
-                    </td>
-                    <td>ChunkyCloud API endpoint.</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <code>--api-key</code>
-                    </td>
-                    <td>
-                      <code>unset</code>
-                    </td>
-                    <td>Render-node API key.</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <code>--api-key-file</code>
-                    </td>
-                    <td>
-                      <code>unset</code>
-                    </td>
-                    <td>
-                      File containing the render-node API key. Useful for
-                      container secrets.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <code>--cpu-load</code>
-                    </td>
-                    <td>
-                      <code>100</code>
-                    </td>
-                    <td>Maximum Chunky CPU load.</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <code>-t</code>, <code>--thread-count</code>
-                    </td>
-                    <td>
-                      <code>2</code>
-                    </td>
-                    <td>Number of render threads used by Chunky.</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <code>--job-path</code>
-                    </td>
-                    <td>
-                      <code>./rs_jobs</code>
-                    </td>
-                    <td>Directory for temporary per-task data.</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <code>--texturepacks-path</code>
-                    </td>
-                    <td>
-                      <code>./rs_texturepacks</code>
-                    </td>
-                    <td>Directory for downloaded resource packs.</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <code>--cache-directory</code>
-                    </td>
-                    <td>
-                      <code>./rs_cache</code>
-                    </td>
-                    <td>
-                      HTTP cache directory for downloaded scene resources.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <code>--max-cache-size</code>
-                    </td>
-                    <td>
-                      <code>512</code>
-                    </td>
-                    <td>Maximum HTTP cache size, in MB.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <p>
-              The node will create working directories, download Minecraft (for
-              default textures), and connect to ChunkyCloud.
-            </p>
-            <p>
-              At this point, your node is ready and will be assigned tasks as
-              soon as they arrive. Look back at the command prompt – it might
-              already be rendering!
-            </p>
-
-            <h2>Frequently Asked Questions</h2>
-
-            <AccordionSection
-              Title="How do I stop the render node?"
-              Content="You can stop your render node at any time by closing the command prompt. If you were rendering something, it will be put back into the queue and get rendered by another node."
-            />
-            <AccordionSection
-              Title="What exactly does my PC do when it's in the render farm?"
-              Content="Your PC connects to ChunkyCloud's RabbitMQ queue to get render tasks. When it gets a task, it downloads all required files from the ChunkyCloud server, renders the scene using Chunky and then uploads the render dump into another RabbitMQ queue."
-            />
+            <h2>Frequently asked questions</h2>
             <AccordionSection
               Title="Can I use Docker?"
               Content={
                 <>
-                  <p>Absolutely! There even is a Docker image you can use:</p>
-                  <div className="mockup-code w-full my-2">
-                    <pre data-prefix="$">
-                      <code>
-                        docker run --name cc-node
-                        lemaik/chunkycloud-renderer:latest --api-key
-                      </code>
-                    </pre>
-                  </div>
                   <p>
-                    You can also specify the API key with an environment
-                    variable: <code>-e API_KEY=YOUR-API-KEY-HERE</code>
+                    Yes. Replace <code>YOUR_NODE_TOKEN</code> with your token
+                    and run:
+                  </p>
+                  <pre className="bg-base-200 p-4 rounded-md overflow-x-auto text-sm">
+                    <code>
+                      {
+                        "docker run --rm -e API_KEY=YOUR_NODE_TOKEN -v chunkycloud-render-node-data:/opt/cc-rendernode/data ghcr.io/chunkycloud/render-node:latest"
+                      }
+                    </code>
+                  </pre>
+                  <p>
+                    The volume preserves downloaded resource packs and cached
+                    scene data across container restarts. For Docker secrets and
+                    further details, see the{" "}
+                    <a
+                      href="https://github.com/ChunkyCloud/render-node#docker"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Docker instructions in the README
+                    </a>
+                    .
                   </p>
                 </>
+              }
+            />
+            <AccordionSection
+              Title="My render node throws errors but did work just fine until recently. Why?"
+              Content={
+                <p>
+                  ChunkyCloud requires all render nodes to use the latest
+                  version. Download the{" "}
+                  <a
+                    href="https://github.com/ChunkyCloud/render-node/releases/latest"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    latest release
+                  </a>{" "}
+                  or update to the latest Docker image. If that does not solve
+                  the issue, please reach out to us on Discord.
+                </p>
+              }
+            />
+            <AccordionSection
+              Title="Where does the node store its files?"
+              Content="By default, the node creates cc_jobs for temporary task data, cc_texturepacks for resource packs, cc_cache for downloaded resources, and cc_chunky for Chunky settings in its working directory. The Docker command above stores these directories in the mounted volume."
+            />
+            <AccordionSection
+              Title="Can I run my own ChunkyCloud?"
+              Content={
+                <p>
+                  You will soon be able to host your own ChunkyCloud. This can
+                  be used to e.g. setup your own private render farm.
+                </p>
               }
             />
           </div>
