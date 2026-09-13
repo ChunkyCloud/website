@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "../../app/auth/components/SessionProvider";
-import { getCurrentUserJobs, getJobResultFile} from "../../lib/api-client";
+import { getCurrentUserJobs, getJobResultFile } from "../../lib/api-client";
 import type { UserJob } from "../../lib/api-client";
 
 import LoadingCards from "./LoadingCards";
@@ -33,7 +33,6 @@ const JobCards = ({
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [showLoadingFallback, setShowLoadingFallback] = useState(false);
-  const [resultPreviewUrls, setResultPreviewUrls] = useState<Record<number, string>>({});
 
   useEffect(() => {
     let isMounted = true;
@@ -99,34 +98,6 @@ const JobCards = ({
         if (isMounted) {
           setJobs(allJobs);
           onPaginationInfo?.(newTotalPages);
-
-          const completedJobs = allJobs.filter((job) => job.status === "completed");
-          const completedResults = await Promise.allSettled(
-            completedJobs.map(async (job) => {
-              const result = await getJobResultFile({
-                client,
-                path: { id: job.id, file: "image" },
-                throwOnError: false,
-              });
-
-              return {
-                id: job.id,
-                url: result.data?.url ?? null,
-              };
-            }),
-          );
-
-          if (isMounted) {
-            setResultPreviewUrls((previous) => {
-              const next = { ...previous };
-              for (const result of completedResults) {
-                if (result.status === "fulfilled" && result.value.url) {
-                  next[result.value.id] = result.value.url;
-                }
-              }
-              return next;
-            });
-          }
         }
       } catch (err) {
         if (isMounted) {
@@ -198,8 +169,7 @@ const JobCards = ({
       `}</style>
 
       {jobs.map((job) => {
-        const imageSrc =
-          resultPreviewUrls[job.id] ?? job.thumbnailUrl ?? "/images/blueprint.png";
+        const imageSrc = job.thumbnailUrl ?? "/images/blueprint.png";
 
         return (
           <Link key={job.id} href={`/jobs/${job.id}`} className="block mb-4">
@@ -225,28 +195,28 @@ const JobCards = ({
                   />
                 </div>
 
-              <div>{getStatusTag(job)}</div>
+                <div>{getStatusTag(job)}</div>
 
-              <div>
-                <progress
-                  className="progress progress-primary w-full"
-                  value={job.progress}
-                  max={1}
-                ></progress>
-                <p>{(job.progress * 100).toFixed(0)}%</p>
-                <p>SPP: {job.spp}</p>
-              </div>
+                <div>
+                  <progress
+                    className="progress progress-primary w-full"
+                    value={job.progress}
+                    max={1}
+                  ></progress>
+                  <p>{(job.progress * 100).toFixed(0)}%</p>
+                  <p>SPP: {job.spp}</p>
+                </div>
 
-              <div className="text=[8px] text-gray-500 space-y-1">
-                <p>
-                  Started:{" "}
-                  {job.startedAt
-                    ? new Date(job.startedAt).toLocaleString()
-                    : "n/a"}
-                </p>
-                {job.finishedAt && (
-                  <p>Finished: {new Date(job.finishedAt).toLocaleString()}</p>
-                )}
+                <div className="text=[8px] text-gray-500 space-y-1">
+                  <p>
+                    Started:{" "}
+                    {job.startedAt
+                      ? new Date(job.startedAt).toLocaleString()
+                      : "n/a"}
+                  </p>
+                  {job.finishedAt && (
+                    <p>Finished: {new Date(job.finishedAt).toLocaleString()}</p>
+                  )}
                 </div>
               </div>
             </div>
