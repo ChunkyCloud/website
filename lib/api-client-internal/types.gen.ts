@@ -20,25 +20,6 @@ export type RefreshTokenDto = {
     refreshToken: string;
 };
 
-export type CreateNodeDto = {
-    name?: string;
-};
-
-export type CreateNodeResponse = {
-    id: number;
-    /**
-     * Render node token (can not be retrieved again later)
-     */
-    token: string;
-};
-
-export type ResetNodeTokenResponse = {
-    /**
-     * New render node token (can not be retrieved again later)
-     */
-    token: string;
-};
-
 export type RenderNodeResponse = {
     id: number;
     name?: string;
@@ -224,34 +205,6 @@ export type DiscordCallbackResponses = {
 
 export type DiscordCallbackResponse = DiscordCallbackResponses[keyof DiscordCallbackResponses];
 
-export type CreateNodeData = {
-    body: CreateNodeDto;
-    path?: never;
-    query?: never;
-    url: '/nodes';
-};
-
-export type CreateNodeResponses = {
-    201: CreateNodeResponse;
-};
-
-export type CreateNodeResponse2 = CreateNodeResponses[keyof CreateNodeResponses];
-
-export type ResetNodeTokenData = {
-    body?: never;
-    path: {
-        id: number;
-    };
-    query?: never;
-    url: '/nodes/{id}/reset-token';
-};
-
-export type ResetNodeTokenResponses = {
-    200: ResetNodeTokenResponse;
-};
-
-export type ResetNodeTokenResponse2 = ResetNodeTokenResponses[keyof ResetNodeTokenResponses];
-
 export type GetCurrentNodeData = {
     body?: never;
     path?: never;
@@ -357,6 +310,19 @@ export type ReportTaskProgressResponses = {
 };
 
 export type ReportTaskProgressResponse = ReportTaskProgressResponses[keyof ReportTaskProgressResponses];
+
+export type NotifyRenderNodeShutdownData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/nodes/me/shutdown';
+};
+
+export type NotifyRenderNodeShutdownResponses = {
+    204: void;
+};
+
+export type NotifyRenderNodeShutdownResponse = NotifyRenderNodeShutdownResponses[keyof NotifyRenderNodeShutdownResponses];
 
 export type GetCurrentNode2Data = {
     body?: never;

@@ -57,6 +57,25 @@ export type UrlResponse = {
     url: string;
 };
 
+export type CreateNodeDto = {
+    name?: string;
+};
+
+export type CreateNodeResponse = {
+    id: number;
+    /**
+     * Render node token (can not be retrieved again later)
+     */
+    token: string;
+};
+
+export type ResetNodeTokenResponse = {
+    /**
+     * New render node token (can not be retrieved again later)
+     */
+    token: string;
+};
+
 export type ResourcePackDto = {
     /**
      * Resource pack ID
@@ -226,6 +245,34 @@ export type GetJobResultFileResponses = {
 };
 
 export type GetJobResultFileResponse = GetJobResultFileResponses[keyof GetJobResultFileResponses];
+
+export type CreateNodeData = {
+    body: CreateNodeDto;
+    path?: never;
+    query?: never;
+    url: '/nodes';
+};
+
+export type CreateNodeResponses = {
+    201: CreateNodeResponse;
+};
+
+export type CreateNodeResponse2 = CreateNodeResponses[keyof CreateNodeResponses];
+
+export type ResetNodeTokenData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/nodes/{id}/reset-token';
+};
+
+export type ResetNodeTokenResponses = {
+    200: ResetNodeTokenResponse;
+};
+
+export type ResetNodeTokenResponse2 = ResetNodeTokenResponses[keyof ResetNodeTokenResponses];
 
 export type CreateJobData = {
     body: CreateJobDto;

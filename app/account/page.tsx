@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "../auth/components/SessionProvider";
 import { getCurrentUser, getCurrentUserNodes } from "../../lib/api-client";
-import { createNode, resetNodeToken } from "../../lib/api-client-internal";
+import { createNode, resetNodeToken } from "../../lib/api-client";
 
 type NodeToken = {
   id: number;
