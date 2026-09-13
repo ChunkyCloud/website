@@ -30,15 +30,21 @@ const Footer = () => {
         </Link>
       </nav>
       <nav>
-        <h6 className="footer-title">Github</h6>
+        <h6 className="footer-title">Developers</h6>
+        <Link href="https://github.com/ChunkyCloud" className="link link-hover">
+          ChunkyCloud
+        </Link>
+        <Link
+          href="https://api.chunkycloud.net/docs"
+          className="link link-hover"
+        >
+          ChunkyCloud API
+        </Link>
         <Link
           href="https://github.com/leMaik/chunky"
           className="link link-hover"
         >
           Chunky
-        </Link>
-        <Link href="https://github.com/ChunkyCloud" className="link link-hover">
-          ChunkyCloud
         </Link>
       </nav>
       <nav>
