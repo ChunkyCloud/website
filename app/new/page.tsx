@@ -1,5 +1,6 @@
 "use client";
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Head from "next/head";
 import Header from "../../components/Header";
 
@@ -34,6 +35,7 @@ function createFileList(...files: File[]): FileList {
 }
 
 export default function CreateJob() {
+  const router = useRouter();
   const { client, isLoggedIn } = useSession();
 
   {
@@ -277,6 +279,9 @@ export default function CreateJob() {
     setShowValidation(false);
     setSubmitting(true);
 
+    let shouldRedirectToJobs = false;
+    let createdJobId: number | null = null;
+
     try {
       console.log("Creating job on backend");
       const creation_res = await createJob({
@@ -291,6 +296,7 @@ export default function CreateJob() {
       });
       const creation_data = (creation_res as any)?.data;
       if (creation_data) {
+        createdJobId = creation_data.id;
         console.log("Job created with ID:", creation_data.id);
         logRef.current?.addLog(
           "Job created with ID " + creation_data.id,
@@ -364,6 +370,8 @@ export default function CreateJob() {
               "error",
             );
           }
+        } finally {
+          shouldRedirectToJobs = true;
         }
       } else {
         console.warn("No data returned from job creation response");
@@ -373,6 +381,10 @@ export default function CreateJob() {
       logRef.current?.addLog("Failed creating Job", "error");
     } finally {
       setSubmitting(false);
+
+      if (shouldRedirectToJobs && createdJobId !== null) {
+        router.push(`/jobs/${createdJobId}`);
+      }
 
       setTimeout(() => {
         logRef.current?.clear();
@@ -390,6 +402,7 @@ export default function CreateJob() {
     canvasWidth,
     canvasHeight,
     texturepack,
+    router,
   ]);
 
   async function uploadFile(uploadUrl: string, file: File) {
