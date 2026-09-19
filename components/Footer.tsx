@@ -13,7 +13,10 @@ const Footer = () => {
       </aside>
       <nav>
         <h6 className="footer-title">Chunky</h6>
-        <Link href="https://chunky.lemaik.de/" className="link link-hover">
+        <Link
+          href="https://chunky-dev.github.io/docs/"
+          className="link link-hover"
+        >
           Website
         </Link>
         <Link
@@ -30,33 +33,15 @@ const Footer = () => {
         </Link>
       </nav>
       <nav>
-        <h6 className="footer-title">Developers</h6>
+        <h6 className="footer-title">Resources</h6>
         <Link href="https://github.com/ChunkyCloud" className="link link-hover">
-          ChunkyCloud
+          Code on GitHub
         </Link>
         <Link
           href="https://api.chunkycloud.net/docs"
           className="link link-hover"
         >
           ChunkyCloud API
-        </Link>
-        <Link
-          href="https://github.com/leMaik/chunky"
-          className="link link-hover"
-        >
-          Chunky
-        </Link>
-      </nav>
-      <nav>
-        <h6 className="footer-title">Placeholder Legal</h6>
-        <Link href="" className="link link-hover">
-          Terms of use
-        </Link>
-        <Link href="" className="link link-hover">
-          Privacy policy
-        </Link>
-        <Link href="" className="link link-hover">
-          Cookie policy
         </Link>
       </nav>
       <div className="absolute bottom-4 right-10">
