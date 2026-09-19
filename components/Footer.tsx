@@ -13,7 +13,10 @@ const Footer = () => {
       </aside>
       <nav>
         <h6 className="footer-title">Chunky</h6>
-        <Link href="https://chunky.lemaik.de/" className="link link-hover">
+        <Link
+          href="https://chunky-dev.github.io/docs/"
+          className="link link-hover"
+        >
           Website
         </Link>
         <Link
@@ -39,12 +42,6 @@ const Footer = () => {
           className="link link-hover"
         >
           ChunkyCloud API
-        </Link>
-        <Link
-          href="https://chunky-dev.github.io/docs/"
-          className="link link-hover"
-        >
-          Chunky
         </Link>
       </nav>
       <div className="absolute bottom-4 right-10">
