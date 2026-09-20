@@ -82,6 +82,7 @@ const JobPage = ({ params }: PageProps) => {
         await fetchResultImage(jobItem.id);
       } else {
         setResultImageUrl(null);
+        await fetchTile();
       }
     } catch (err) {
       console.error("Failed to fetch job:", err);
@@ -107,7 +108,6 @@ const JobPage = ({ params }: PageProps) => {
 
   useEffect(() => {
     void fetchJob();
-    void fetchTile();
   }, [client, id]);
 
   const handleAbort = async () => {
