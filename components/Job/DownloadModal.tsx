@@ -1,17 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "../../app/auth/components/SessionProvider";
 import { getJobFile, getJobResultFile, UserJob } from "../../lib/api-client";
-import type { Client } from "../../lib/api-client/client";
 
 type DownloadableFile = "image" | "dump" | "scene" | "octree" | "emittergrid";
 
 interface DownloadModalProps {
   isOpen: boolean;
-  job: UserJob;
-  hasEmitterGrid: boolean;
-  client: Client;
   onClose: () => void;
+  job: UserJob;
 }
 
 const FILE_OPTIONS: {
@@ -38,23 +36,6 @@ const FILE_OPTIONS: {
   },
 ];
 
-function getMessageFromPayload(payload: unknown): string | null {
-  if (
-    typeof payload === "object" &&
-    payload !== null &&
-    "message" in payload &&
-    typeof (payload as { message?: unknown }).message === "string"
-  ) {
-    return (payload as { message: string }).message;
-  }
-
-  if (typeof payload === "string" && payload.trim().length > 0) {
-    return payload;
-  }
-
-  return null;
-}
-
 function getFallbackFilename(
   jobId: number,
   fileType: DownloadableFile,
@@ -69,29 +50,12 @@ function getFallbackFilename(
   return `job-${jobId}-${fileType}.${extensionByType[fileType]}`;
 }
 
-function getFilenameFromHeader(
-  contentDisposition: string | null,
-): string | null {
-  if (!contentDisposition) {
-    return null;
-  }
-
-  const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
-  if (utf8Match?.[1]) {
-    return decodeURIComponent(utf8Match[1]);
-  }
-
-  const fallbackMatch = contentDisposition.match(/filename="?([^";]+)"?/i);
-  return fallbackMatch?.[1] ?? null;
-}
-
 export default function DownloadModal({
   isOpen,
   job,
-  hasEmitterGrid,
-  client,
   onClose,
 }: DownloadModalProps) {
+  const { client } = useSession();
   const [downloadingFile, setDownloadingFile] =
     useState<DownloadableFile | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -101,7 +65,7 @@ export default function DownloadModal({
     anchor.href = downloadUrl;
     anchor.download = filename;
     anchor.click();
-    console.log({ downloadUrl, filename });
+    anchor.remove();
   };
 
   const handleDownload = async (file: DownloadableFile) => {
