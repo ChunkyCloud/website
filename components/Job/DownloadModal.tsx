@@ -1,25 +1,41 @@
 "use client";
 
 import { useState } from "react";
-import { getJobFile, getJobResultFile } from "../../lib/api-client";
+import { getJobFile, getJobResultFile, UserJob } from "../../lib/api-client";
 import type { Client } from "../../lib/api-client/client";
 
-type DownloadableFile = "result" | "scene" | "octree" | "emittergrid";
+type DownloadableFile = "image" | "dump" | "scene" | "octree" | "emittergrid";
 
 interface DownloadModalProps {
   isOpen: boolean;
-  jobId: number;
+  job: UserJob;
   hasEmitterGrid: boolean;
   client: Client;
   onClose: () => void;
 }
 
-const FILE_OPTIONS: { label: string; value: DownloadableFile }[] = [
-  { label: "Result Image", value: "result" },
+const FILE_OPTIONS: {
+  label: string;
+  value: DownloadableFile;
+  isAvailable?: (job: UserJob) => boolean;
+}[] = [
+  {
+    label: "Result image",
+    value: "image",
+    isAvailable: (job) => job.status === "completed",
+  },
+  {
+    label: "Result dump",
+    value: "dump",
+    isAvailable: (job) => job.status === "completed" && job.createDump,
+  },
   { label: "Scene", value: "scene" },
   { label: "Octree", value: "octree" },
-  { label: "Emitter Grid", value: "emittergrid" },
-  //{ label: "Dump", value: "dump" }, ADD LATER WHEN IMPLEMENTED
+  {
+    label: "Emitter Grid",
+    value: "emittergrid",
+    isAvailable: (job) => job.hasEmitterGrid,
+  },
 ];
 
 function getMessageFromPayload(payload: unknown): string | null {
@@ -44,7 +60,8 @@ function getFallbackFilename(
   fileType: DownloadableFile,
 ): string {
   const extensionByType: Record<DownloadableFile, string> = {
-    result: "png",
+    image: "png",
+    dump: "dump",
     scene: "json",
     octree: "octree",
     emittergrid: "emittergrid",
@@ -70,7 +87,7 @@ function getFilenameFromHeader(
 
 export default function DownloadModal({
   isOpen,
-  jobId,
+  job,
   hasEmitterGrid,
   client,
   onClose,
@@ -97,17 +114,20 @@ export default function DownloadModal({
 
     try {
       const result =
-        file === "result"
+        file === "image" || file === "dump"
           ? await getJobResultFile({
               client,
-              path: { id: jobId, file: "image" },
+              path: { id: job.id, file },
             })
           : await getJobFile({
               client,
-              path: { id: jobId, file },
+              path: { id: job.id, file },
             });
 
-      triggerBrowserDownload(result.data.url, getFallbackFilename(jobId, file));
+      triggerBrowserDownload(
+        result.data.url,
+        getFallbackFilename(job.id, file),
+      );
       onClose();
     } catch (downloadError) {
       setError(
@@ -134,10 +154,10 @@ export default function DownloadModal({
         aria-describedby="download-modal-description"
       >
         <h3 id="download-modal-title" className="text-xl font-semibold">
-          Download Job File
+          Download Job files
         </h3>
         <p id="download-modal-description" className="mt-2 text-sm opacity-80">
-          Job ID: {jobId}
+          Job ID: {job.id}
         </p>
 
         <div className="mt-5 space-y-3">
@@ -155,8 +175,8 @@ export default function DownloadModal({
                 }}
                 aria-label={`Download ${option.label} file`}
                 disabled={
-                  downloadingFile !== null ||
-                  (option.value === "emittergrid" && !hasEmitterGrid)
+                  option.isAvailable?.(job) === false ||
+                  downloadingFile !== null
                 }
               >
                 <span>{option.label}</span>
