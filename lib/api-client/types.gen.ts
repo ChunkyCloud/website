@@ -7,35 +7,38 @@ export type ClientOptions = {
 export type UserResponse = {
     id: number;
     displayName: string;
-    avatarUrl?: {
-        [key: string]: unknown;
-    };
+    avatarUrl: string | null;
+    credits: string;
 };
 
 export type UserNodeResponse = {
     id: number;
-    name?: string;
-    lastSeenAt?: string;
+    name?: string | null;
+    lastSeenAt?: string | null;
 };
-
-export type JobStatus = 'draft' | 'queued' | 'running' | 'merge_pending' | 'merge_running' | 'completed' | 'aborted';
 
 export type Order = 'asc' | 'desc';
 
-export type UserJob = {
+export type CreditTransactionType = 'job_fee' | 'job_refund' | 'render_reward' | 'weekly_grant' | 'admin_adjustment';
+
+export type UserTransaction = {
     id: number;
-    status: JobStatus;
-    progress: number;
-    spp: number;
-    width: number;
-    height: number;
-    hasEmitterGrid: boolean;
-    createDump: boolean;
+    /**
+     * Signed credit balance change: charges are negative, rewards are positive
+     */
+    amount: string;
+    type: CreditTransactionType;
+    job?: {
+        id: number;
+    } | null;
+    task?: {
+        id: number;
+    } | null;
+    note: string | null;
+    details: {
+        [key: string]: unknown;
+    } | null;
     createdAt: string;
-    startedAt?: string;
-    finishedAt?: string;
-    abortedAt?: string;
-    thumbnailUrl?: string;
 };
 
 export type CurrentPage = {
@@ -48,8 +51,61 @@ export type PaginationInfo = {
     totalCount: number;
 };
 
+export type UserTransactionsResponse = {
+    data: Array<UserTransaction>;
+    extra: PaginationInfo;
+};
+
+export type JobStatus = 'draft' | 'queued' | 'running' | 'merge_pending' | 'merge_running' | 'completed' | 'aborted';
+
+export type UserJob = {
+    id: number;
+    status: JobStatus;
+    progress: number;
+    spp: number;
+    width: number;
+    height: number;
+    hasEmitterGrid: boolean;
+    createDump: boolean;
+    createdAt: string;
+    startedAt?: string | null;
+    finishedAt?: string | null;
+    abortedAt?: string | null;
+    thumbnailUrl?: string;
+};
+
 export type UserJobsResponse = {
     data: Array<UserJob>;
+    extra: PaginationInfo;
+};
+
+export type RenderJobEventType = 'task_assigned' | 'task_started' | 'task_completed' | 'task_requeued' | 'task_failed' | 'job_queued' | 'job_completed' | 'job_cancelled';
+
+export type RenderJobEventVisibility = 'user' | 'admin';
+
+export type UserJobHistoryEvent = {
+    id: number;
+    type: RenderJobEventType;
+    visibility: RenderJobEventVisibility;
+    job?: {
+        id: number;
+    };
+    task?: {
+        id: number;
+    } | null;
+    node?: {
+        id: number;
+        type: 'renderer' | 'worker';
+    } | null;
+    reason?: {
+        code: string;
+        message?: string;
+    } | null;
+    createdAt: string;
+};
+
+export type UserJobHistoryResponse = {
+    data: Array<UserJobHistoryEvent>;
     extra: PaginationInfo;
 };
 
@@ -74,6 +130,23 @@ export type ResetNodeTokenResponse = {
      * New render node token (can not be retrieved again later)
      */
     token: string;
+};
+
+export type EstimateJobCostDto = {
+    width: number;
+    height: number;
+    spp: number;
+};
+
+export type EstimateJobCostResponse = {
+    /**
+     * Estimated work units as an integer string
+     */
+    workUnits: string;
+    /**
+     * Credit charge as an integer string; currently 1 credit per work unit
+     */
+    credits: string;
 };
 
 export type ResourcePackDto = {
@@ -124,7 +197,7 @@ export type TileResponse = {
     /**
      * URL to access the rendered tile image in PNG format. The URL is guaranteed to remain valid for at least one hour after it is requested.
      */
-    url?: string;
+    url: string | null;
 };
 
 export type ResourcePackResponse = {
@@ -139,7 +212,7 @@ export type ResourcePackResponse = {
     /**
      * A description of this resource pack
      */
-    description?: string;
+    description: string;
 };
 
 export type PublicStatsResponse = {
@@ -183,6 +256,24 @@ export type GetCurrentUserNodesResponses = {
 
 export type GetCurrentUserNodesResponse = GetCurrentUserNodesResponses[keyof GetCurrentUserNodesResponses];
 
+export type GetCurrentUserTransactionsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        sort?: 'createdAt';
+        order?: Order;
+        page?: number;
+        limit?: number;
+    };
+    url: '/users/me/transactions';
+};
+
+export type GetCurrentUserTransactionsResponses = {
+    200: UserTransactionsResponse;
+};
+
+export type GetCurrentUserTransactionsResponse = GetCurrentUserTransactionsResponses[keyof GetCurrentUserTransactionsResponses];
+
 export type GetCurrentUserJobsData = {
     body?: never;
     path?: never;
@@ -197,10 +288,37 @@ export type GetCurrentUserJobsData = {
 };
 
 export type GetCurrentUserJobsResponses = {
-    200: Array<UserJobsResponse>;
+    200: UserJobsResponse;
 };
 
 export type GetCurrentUserJobsResponse = GetCurrentUserJobsResponses[keyof GetCurrentUserJobsResponses];
+
+export type GetCurrentUserJobHistoryData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: {
+        sort?: 'createdAt';
+        order?: Order;
+        page?: number;
+        limit?: number;
+    };
+    url: '/users/me/jobs/{id}/history';
+};
+
+export type GetCurrentUserJobHistoryErrors = {
+    /**
+     * Job not found or not owned by the current user
+     */
+    404: unknown;
+};
+
+export type GetCurrentUserJobHistoryResponses = {
+    200: UserJobHistoryResponse;
+};
+
+export type GetCurrentUserJobHistoryResponse = GetCurrentUserJobHistoryResponses[keyof GetCurrentUserJobHistoryResponses];
 
 export type GetCurrentUserJobData = {
     body?: never;
@@ -212,7 +330,7 @@ export type GetCurrentUserJobData = {
 };
 
 export type GetCurrentUserJobResponses = {
-    200: Array<UserJob>;
+    200: UserJob;
 };
 
 export type GetCurrentUserJobResponse = GetCurrentUserJobResponses[keyof GetCurrentUserJobResponses];
@@ -273,6 +391,26 @@ export type ResetNodeTokenResponses = {
 };
 
 export type ResetNodeTokenResponse2 = ResetNodeTokenResponses[keyof ResetNodeTokenResponses];
+
+export type EstimateJobCostData = {
+    body: EstimateJobCostDto;
+    path?: never;
+    query?: never;
+    url: '/jobs/cost-estimate';
+};
+
+export type EstimateJobCostErrors = {
+    /**
+     * Invalid dimensions, SPP or work unit overflow
+     */
+    400: unknown;
+};
+
+export type EstimateJobCostResponses = {
+    200: EstimateJobCostResponse;
+};
+
+export type EstimateJobCostResponse2 = EstimateJobCostResponses[keyof EstimateJobCostResponses];
 
 export type CreateJobData = {
     body: CreateJobDto;
@@ -401,7 +539,7 @@ export type GetResourcePacksData = {
 };
 
 export type GetResourcePacksResponses = {
-    default: Array<ResourcePackResponse>;
+    200: Array<ResourcePackResponse>;
 };
 
 export type GetResourcePacksResponse = GetResourcePacksResponses[keyof GetResourcePacksResponses];

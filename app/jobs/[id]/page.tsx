@@ -62,23 +62,10 @@ const JobPage = ({ params }: PageProps) => {
         path: { id },
       });
 
-      // fetchedJob.data can be either an array (from 200: Array<UserJob>)
-      // or a single object depending on the client generic. Normalize it
-      // to a single `UserJob | null` before updating state.
-      const maybeData = fetchedJob.data as unknown as
-        | UserJob[]
-        | UserJob
-        | undefined;
-      let jobItem: UserJob | null = null;
-      if (Array.isArray(maybeData)) {
-        jobItem = maybeData[0] ?? null;
-      } else {
-        jobItem = (maybeData as UserJob) ?? null;
-      }
-
+      const jobItem = fetchedJob.data; // TODO check type
       setJob(jobItem);
 
-      if (jobItem?.status === "completed") {
+      if (jobItem.status === "completed") {
         await fetchResultImage(jobItem.id);
       } else {
         setResultImageUrl(null);

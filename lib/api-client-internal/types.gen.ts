@@ -22,11 +22,16 @@ export type RefreshTokenDto = {
 
 export type RenderNodeResponse = {
     id: number;
-    name?: string;
+    name?: string | null;
     enabled: boolean;
-    lastSeenAt: string;
+    lastSeenAt?: string | null;
     createdAt: string;
     updatedAt: string;
+    currentSps: number;
+    currentSpsUpdatedAt?: string | null;
+    user: {
+        id: number;
+    };
 };
 
 export type NextTaskResponse = {
@@ -70,6 +75,15 @@ export type FinishTaskRenderingResponse = {
 export type ReportTaskProgressDto = {
     spp: number;
     sps: number;
+};
+
+export type WorkerNodeResponse = {
+    id: number;
+    name?: string | null;
+    enabled: boolean;
+    lastSeenAt?: string | null;
+    createdAt: string;
+    updatedAt: string;
 };
 
 export type NextWorkerTaskResponse = {
@@ -178,10 +192,6 @@ export type DiscordLoginData = {
     url: '/auth/discord';
 };
 
-export type DiscordLoginResponses = {
-    200: unknown;
-};
-
 export type DiscordCallbackData = {
     body?: never;
     path?: never;
@@ -213,7 +223,7 @@ export type GetCurrentNodeData = {
 };
 
 export type GetCurrentNodeResponses = {
-    default: RenderNodeResponse;
+    200: RenderNodeResponse;
 };
 
 export type GetCurrentNodeResponse = GetCurrentNodeResponses[keyof GetCurrentNodeResponses];
@@ -258,7 +268,7 @@ export type FinishTaskRenderingResponses = {
     /**
      * URLs to upload the render results to
      */
-    200: FinishTaskRenderingResponse;
+    201: FinishTaskRenderingResponse;
 };
 
 export type FinishTaskRenderingResponse2 = FinishTaskRenderingResponses[keyof FinishTaskRenderingResponses];
@@ -332,7 +342,7 @@ export type GetCurrentNode2Data = {
 };
 
 export type GetCurrentNode2Responses = {
-    default: RenderNodeResponse;
+    200: WorkerNodeResponse;
 };
 
 export type GetCurrentNode2Response = GetCurrentNode2Responses[keyof GetCurrentNode2Responses];
@@ -377,7 +387,7 @@ export type GetMergeTaskUploadUrlsResponses = {
     /**
      * URLs to upload the merge results to
      */
-    200: FinishMergeTaskResponse;
+    201: FinishMergeTaskResponse;
 };
 
 export type GetMergeTaskUploadUrlsResponse = GetMergeTaskUploadUrlsResponses[keyof GetMergeTaskUploadUrlsResponses];

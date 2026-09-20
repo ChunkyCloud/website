@@ -9,12 +9,12 @@ type Duration = {
 
 type DurationCounterProps = {
   startDate: Date | string;
-  endDate?: Date | string;
+  endDate?: Date | string | null;
 };
 
 function getDuration(
   startDate: Date | string,
-  endDate?: Date | string,
+  endDate?: Date | string | null,
 ): Duration {
   const start = new Date(startDate).getTime();
   const end = endDate ? new Date(endDate).getTime() : Date.now();
