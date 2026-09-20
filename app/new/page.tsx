@@ -290,7 +290,7 @@ export default function CreateJob() {
           spp: targetSpp,
           width: canvasWidth,
           height: canvasHeight,
-          createDump: true,
+          createDump: renderDump,
           resourcePacks: texturepack,
         },
       });
