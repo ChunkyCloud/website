@@ -110,6 +110,13 @@ const JobPage = ({ params }: PageProps) => {
     void fetchJob();
   }, [client, id]);
 
+  useEffect(() => {
+    if (job && job.status !== "completed" && job.status !== "aborted") {
+      const timeout = setTimeout(() => fetchJob(), 30_000);
+      return () => clearTimeout(timeout);
+    }
+  }, [job]);
+
   const handleAbort = async () => {
     if (!job || isSubmitting) {
       return;
