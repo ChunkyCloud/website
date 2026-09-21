@@ -5,10 +5,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "../../app/auth/components/SessionProvider";
 import { getCurrentUser } from "../../lib/api-client";
 
-type CurrentUser = {
-  displayName: string;
-  avatarUrl?: string;
-};
+import type { UserResponse } from "../../lib/api-client";
 
 const LoginButton = () => {
   const { isLoggedIn, client } = useSession();
@@ -24,7 +21,7 @@ const LoginButton = () => {
 
     getCurrentUser({ client, signal: ac.signal })
       .then((user) =>
-        setAvatarUrl((user.data as CurrentUser).avatarUrl ?? null),
+        setAvatarUrl((user.data as UserResponse).avatarUrl ?? null),
       )
       .catch((error) => {
         if (ac.signal.aborted) return;
