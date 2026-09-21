@@ -43,3 +43,6 @@ process.env
 
 # vs code
 .vscode
+
+#development
+next-env.d.ts
