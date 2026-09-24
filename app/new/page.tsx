@@ -7,7 +7,12 @@ import Header from "../../components/Header";
 import { canvasSizeToDimensions } from "../new/utils";
 
 import { useSession } from "../../app/auth/components/SessionProvider";
-import { createJob, startJob, getResourcePacks } from "../../lib/api-client";
+import {
+  createJob,
+  estimateJobCost,
+  startJob,
+  getResourcePacks,
+} from "../../lib/api-client";
 import type { ResourcePackResponse } from "../../lib/api-client";
 
 import LogPanel, { LogPanelRef } from "../../components/LogPanel";
@@ -32,6 +37,40 @@ function createFileList(...files: File[]): FileList {
   const dataTransfer = new DataTransfer();
   files.forEach((file) => dataTransfer.items.add(file));
   return dataTransfer.files;
+}
+
+function useAnimatedNumber(value: number | null, duration = 600) {
+  const [display, setDisplay] = useState<number | null>(value);
+  const raf = useRef<number | null>(null);
+  const fromRef = useRef<number>(value ?? 0);
+
+  useEffect(() => {
+    if (value === null) {
+      setDisplay(null);
+      fromRef.current = 0;
+      return;
+    }
+    const from = fromRef.current ?? 0;
+    const to = Number(value);
+    const start = performance.now();
+
+    if (raf.current) cancelAnimationFrame(raf.current);
+
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const cur = from + (to - from) * t;
+      setDisplay(cur);
+      if (t < 1) raf.current = requestAnimationFrame(step);
+      else fromRef.current = to;
+    };
+
+    raf.current = requestAnimationFrame(step);
+    return () => {
+      if (raf.current) cancelAnimationFrame(raf.current);
+    };
+  }, [value, duration]);
+
+  return display;
 }
 
 export default function CreateJob() {
@@ -176,6 +215,20 @@ export default function CreateJob() {
 
   const [submitting, setSubmitting] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
+  const [userDisplayCredits, setUserDisplayCredits] = useState<number | null>(
+    null,
+  );
+
+  // Estimate state
+  const [estimatedWorkUnits, setEstimatedWorkUnits] = useState<number | null>(
+    null,
+  );
+  const [estimatedCredits, setEstimatedCredits] = useState<number | null>(null);
+  const estimateTimerRef = useRef<number | null>(null);
+
+  // animated displayed values
+  const animatedWorkUnits = useAnimatedNumber(estimatedWorkUnits, 500);
+  const animatedCredits = useAnimatedNumber(estimatedCredits, 500);
 
   const handleFiles = useCallback(
     (files: File[]) => {
@@ -259,17 +312,73 @@ export default function CreateJob() {
     [handleFiles],
   );
 
+  const HandleEstimateJobCost = useCallback(async () => {
+    if (!client) return;
+    try {
+      const res = await estimateJobCost({
+        client,
+        body: { width: canvasWidth, height: canvasHeight, spp: targetSpp },
+      });
+      const data = (res as any)?.data;
+      if (data) {
+        const wu = data.workUnits ? Number(data.workUnits) : null;
+        setEstimatedWorkUnits(wu);
+        setEstimatedCredits(
+          data.workUnits ? Math.round(Number(data.workUnits) * 0.000001) : null,
+        );
+      }
+    } catch (err: any) {
+      console.error("Estimate failed", err);
+      setEstimatedWorkUnits(null);
+      setEstimatedCredits(null);
+    }
+  }, [client, canvasWidth, canvasHeight, targetSpp]);
+
+  useEffect(() => {
+    if (!client) return;
+    let ac: AbortController | null = new AbortController();
+    import("../../lib/api-client").then(({ getCurrentUser }) => {
+      getCurrentUser({ client, signal: ac!.signal })
+        .then((user) => {
+          const data = (user as any).data;
+          if (data?.credits != null) {
+            setUserDisplayCredits(parseInt(data.credits) / 100000);
+          }
+        })
+        .catch((err) => {
+          if (ac?.signal.aborted) return;
+          console.error("Failed to fetch current user for credits", err);
+        });
+    });
+    return () => ac?.abort();
+  }, [client]);
+
   const HandlecreateJob = useCallback(async () => {
     {
       /* Validate if required Inputs are filled out */
     }
     if (!sceneDescription || !octreeDescription || !renderName) {
       setShowValidation(true);
-      console.log("Job Validation failed Case: Missing required field:", {
-        sceneDescription: sceneDescription,
-        octreeDescription: octreeDescription,
-        renderName: renderName,
-      });
+      console.log(
+        "Job Validation failed Case: Insufficient credits or missing required field:",
+        {
+          sceneDescription: sceneDescription,
+          octreeDescription: octreeDescription,
+          renderName: renderName,
+        },
+      );
+      return;
+    }
+
+    // prevent submission when insufficient credits
+    if (
+      userDisplayCredits !== null &&
+      estimatedCredits !== null &&
+      userDisplayCredits < estimatedCredits
+    ) {
+      setShowValidation(true);
+      logRef.current?.show();
+      logRef.current?.addLog("Insufficient credits to start this job", "error");
       return;
     }
 
@@ -284,7 +393,6 @@ export default function CreateJob() {
     setSubmitting(true);
 
     let shouldRedirectToJobs = false;
-    let createdJobId: number | null = null;
 
     try {
       console.log("Creating job on backend");
@@ -300,7 +408,6 @@ export default function CreateJob() {
       });
       const creation_data = (creation_res as any)?.data;
       if (creation_data) {
-        createdJobId = creation_data.id;
         console.log("Job created with ID:", creation_data.id);
         logRef.current?.addLog(
           "Job created with ID " + creation_data.id,
@@ -386,8 +493,8 @@ export default function CreateJob() {
     } finally {
       setSubmitting(false);
 
-      if (shouldRedirectToJobs && createdJobId !== null) {
-        router.push(`/jobs/${createdJobId}`);
+      if (shouldRedirectToJobs) {
+        router.push("/jobs");
       }
 
       setTimeout(() => {
@@ -407,6 +514,24 @@ export default function CreateJob() {
     canvasHeight,
     texturepack,
     router,
+  ]);
+
+  useEffect(() => {
+    // debounce:300ms
+    if (estimateTimerRef.current) window.clearTimeout(estimateTimerRef.current);
+    estimateTimerRef.current = window.setTimeout(() => {
+      HandleEstimateJobCost();
+    }, 300) as unknown as number;
+    return () => {
+      if (estimateTimerRef.current)
+        window.clearTimeout(estimateTimerRef.current);
+    };
+  }, [
+    canvasWidth,
+    canvasHeight,
+    targetSpp,
+    sceneDescription,
+    HandleEstimateJobCost,
   ]);
 
   async function uploadFile(uploadUrl: string, file: File) {
@@ -692,6 +817,36 @@ export default function CreateJob() {
                   <span>7500</span>
                   <span>10000</span>
                 </div>
+                <div className="mt-4 p-3 bg-base-300 rounded-box">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm">Estimated Cost</div>
+                      <div className="text-lg font-bold">
+                        {animatedCredits !== null
+                          ? `${Intl.NumberFormat().format(Math.round(animatedCredits))} credits`
+                          : "—"}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {animatedWorkUnits !== null
+                          ? `${Intl.NumberFormat().format(Math.round(animatedWorkUnits))} work units`
+                          : ""}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      {userDisplayCredits !== null &&
+                        estimatedCredits !== null &&
+                        (userDisplayCredits < estimatedCredits ? (
+                          <div className="badge badge-error">
+                            Insufficient credits
+                          </div>
+                        ) : (
+                          <div className="badge badge-success">
+                            Sufficient credits
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="form-control w-full mb-4 menu-vertical">
@@ -767,7 +922,11 @@ export default function CreateJob() {
                         ]
                           .filter(Boolean)
                           .join(", ")}`
-                      : "Click to Submit your render job"
+                      : userDisplayCredits !== null &&
+                          estimatedCredits !== null &&
+                          userDisplayCredits < estimatedCredits
+                        ? "Insufficient credits"
+                        : "Click to Submit your render job"
                 }
               >
                 <button
@@ -777,7 +936,12 @@ export default function CreateJob() {
                       : ""
                   }`}
                   onClick={HandlecreateJob}
-                  disabled={submitting}
+                  disabled={
+                    submitting ||
+                    (userDisplayCredits !== null &&
+                      estimatedCredits !== null &&
+                      userDisplayCredits < estimatedCredits)
+                  }
                 >
                   {submitting ? (
                     <span className="loading loading-spinner loading-md"></span>
