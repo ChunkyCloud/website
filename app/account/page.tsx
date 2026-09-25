@@ -442,7 +442,9 @@ const AccountPage = () => {
           <div className="mb-6 grid gap-4 sm:grid-cols-[1fr_2fr]">
             <div className="rounded-2xl border border-base-300/80 bg-base-100/90 p-4">
               <p className="text-sm text-gray-400">Current Credits</p>
-              <p className="text-3xl font-bold">{session?.credits ?? "—"}</p>
+              <p className="text-3xl font-bold">
+                {formatAmount(String(session?.credits ?? "—"))}
+              </p>
               <p className="text-sm text-gray-500">Available balance</p>
             </div>
 
