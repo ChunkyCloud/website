@@ -10,6 +10,15 @@ import {
 } from "../../lib/api-client";
 import { createNode, resetNodeToken } from "../../lib/api-client";
 
+import Icon from "@mdi/react";
+import {
+  mdiAccountCash,
+  mdiFileDocument,
+  mdiFileUndoOutline,
+  mdiGift,
+  mdiServerNetwork,
+} from "@mdi/js";
+
 type NodeToken = {
   id: number;
   token: string;
@@ -199,59 +208,15 @@ const AccountPage = () => {
 
     switch (type) {
       case "job_fee":
-        return (
-          <svg {...commonProps}>
-            <path d="M7 4.75h10A2.25 2.25 0 0 1 19.25 7v10A2.25 2.25 0 0 1 17 19.25H7A2.25 2.25 0 0 1 4.75 17V7A2.25 2.25 0 0 1 7 4.75Z" />
-            <path d="M8.5 9.5h7" />
-            <path d="M8.5 12.5h7" />
-            <path d="M8.5 15.5h4.5" />
-          </svg>
-        );
+        return <Icon path={mdiFileDocument} size={1} />;
       case "job_refund":
-        return (
-          <svg {...commonProps}>
-            <path d="M8 7.5h9a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H8" />
-            <path d="M10 11.5 7 14.5l3 3" />
-            <path d="M7 14.5h8" />
-          </svg>
-        );
+        return <Icon path={mdiFileUndoOutline} size={1} />;
       case "render_reward":
-        return (
-          <svg {...commonProps}>
-            <path d="M12 3.75v3.5" />
-            <path d="M12 16.75v3.5" />
-            <path d="M6.5 7.5h11" />
-            <path d="M6.5 16.5h11" />
-            <path d="M8.5 9.5h7v5h-7z" />
-            <path d="M12 9.5v5" />
-          </svg>
-        );
+        return <Icon path={mdiServerNetwork} size={1} />;
       case "weekly_grant":
-        return (
-          <svg {...commonProps}>
-            <rect x="4.75" y="5.5" width="14.5" height="14" rx="2" />
-            <path d="M8 3.75v3.5" />
-            <path d="M16 3.75v3.5" />
-            <path d="M4.75 9.5h14.5" />
-            <path d="M8.5 13.5h3" />
-            <path d="M8.5 16.5h7" />
-          </svg>
-        );
+        return <Icon path={mdiGift} size={1} />;
       case "admin_adjustment":
-        return (
-          <svg {...commonProps}>
-            <circle cx="12" cy="12" r="2.5" />
-            <path d="M19.5 12a7.5 7.5 0 0 0-.12-1.3l2.02-1.57-1.75-3.03-2.43 1a7.7 7.7 0 0 0-2.25-1.3L14.5 3h-5l-.47 2.8a7.7 7.7 0 0 0-2.25 1.3l-2.43-1-1.75 3.03 2.02 1.57A7.5 7.5 0 0 0 4.5 12c0 .44.04.88.12 1.3L2.6 15.87l1.75 3.03 2.43-1a7.7 7.7 0 0 0 2.25 1.3L9.5 21h5l.47-2.8a7.7 7.7 0 0 0 2.25-1.3l2.43 1 1.75-3.03-2.02-1.57c.08-.42.12-.86.12-1.3Z" />
-          </svg>
-        );
-      default:
-        return (
-          <svg {...commonProps}>
-            <rect x="4.75" y="6.5" width="14.5" height="11" rx="2" />
-            <path d="M8.5 10.5h7" />
-            <path d="M8.5 13.5h4" />
-          </svg>
-        );
+        return <Icon path={mdiAccountCash} size={1} />;
     }
   };
 
